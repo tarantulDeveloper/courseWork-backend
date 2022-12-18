@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserServiceI{
 
     @Override
     public ResponseEntity<?> singIn(LoginRequest loginRequest) {
-        System.out.println(loginRequest.getPassword() + " " + loginRequest.getUsername());
         Authentication authentication = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(
