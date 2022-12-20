@@ -1,13 +1,22 @@
 package kg.beaver.warehouse.controllers;
 
+import kg.beaver.warehouse.entities.Material;
+import kg.beaver.warehouse.services.MaterialService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
     @GetMapping("/all")
     public String allAccess() {
         return "Public content";
@@ -24,4 +33,6 @@ public class UserController {
     public String adminAccess() {
         return "Admin access";
     }
+
+
 }

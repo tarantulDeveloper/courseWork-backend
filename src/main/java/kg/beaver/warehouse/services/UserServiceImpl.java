@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserServiceI{
         return userRepository.save(user);
     }
 
+
+
     @Override
     public ResponseEntity<?> singIn(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
@@ -80,5 +82,22 @@ public class UserServiceImpl implements UserServiceI{
                         userDetails.getEmail(),
                         roles));
 
+    }
+
+    @Override
+    public ResponseEntity<?> makeAdmin(SignUpRequest signUpRequest) {
+        User user = new User(signUpRequest.getUsername(),
+                signUpRequest.getEmail(),
+                passwordEncoder.encode(signUpRequest.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_WORKER)
+                .orElseThrow(() -> new RegistrationException("There is no worker role"));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RegistrationException("There is no worker role"));
+        roles.add(userRole);
+        roles.add(adminRole);
+        user.setRoles(roles);
+        userRepository.save(user);
+        return ResponseEntity.ok(user);
     }
 }
