@@ -6,6 +6,8 @@ import kg.beaver.warehouse.repo.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
@@ -27,5 +29,10 @@ public class CategoryServiceImpl implements CategoryService{
             throw new RegistrationException("The same category already exist.");
         }
         return categoryRepository.save(new Category(categoryName));
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
     }
 }

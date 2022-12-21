@@ -10,4 +10,5 @@ public interface UserServiceI {
     User createUser(SignUpRequest signUpRequest);
     ResponseEntity<?> singIn(LoginRequest loginRequest);
     ResponseEntity<?> makeAdmin(SignUpRequest signUpRequest);
+    String activateUser(String code);
 }

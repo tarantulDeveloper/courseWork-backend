@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,38 +35,44 @@ public class MaterialServiceImpl implements MaterialService {
             throw new ResourceNotFoundException("No such category.");
         }
         //saving image to 'upload' folder
-        String fileName = "";
-        if(!file.isEmpty()) {
-            File uploadDir = new File(uploadPath);
-            fileName = file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + fileName));
-        } else {
-            fileName = "default-img.png";
-        }
+//        String fileName = "";
+//        if(!file.isEmpty()) {
+//            File uploadDir = new File(uploadPath);
+//            fileName = file.getOriginalFilename();
+//            file.transferTo(new File(uploadPath + "/" + fileName));
+//        } else {
+//            fileName = "default-img.png";
+//        }
+
+        String fileName = file.getOriginalFilename();
 
 
-
-
-
-        Category category= categoryRepository.findByName(categoryName).get();
+        Category category = categoryRepository.findByName(categoryName).get();
         Material material = new Material();
         material.setCategory(category);
         material.setName(materialName);
         material.setPrice(price);
-        material.setPhoto(uploadPath + "/" + fileName);
+        material.setPhoto(fileName);
         material.setDescription(description);
         material.setQuantity(quantity);
         material.setSize(size);
+        material.setFileType(file.getContentType());
+        material.setData(file.getBytes());
         return materialRepository.save(material);
 
     }
 
     @Override
     public boolean deleteById(Integer id) {
-        if(materialRepository.existsById(id)){
+        if (materialRepository.existsById(id)) {
             materialRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Material> getAllMaterials() {
+        return materialRepository.findAll();
     }
 }

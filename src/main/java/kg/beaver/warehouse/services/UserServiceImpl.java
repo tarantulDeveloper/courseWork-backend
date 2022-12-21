@@ -9,6 +9,7 @@ import kg.beaver.warehouse.payload.request.SignUpRequest;
 import kg.beaver.warehouse.payload.response.UserInfoResponse;
 import kg.beaver.warehouse.repo.RoleRepository;
 import kg.beaver.warehouse.repo.UserRepository;
+import kg.beaver.warehouse.utis.email.MailSender;
 import kg.beaver.warehouse.utis.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,8 @@ public class UserServiceImpl implements UserServiceI{
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
+    private final MailSender mailSender;
 
     @Override
     public User createUser(SignUpRequest signUpRequest) {
@@ -55,6 +59,16 @@ public class UserServiceImpl implements UserServiceI{
                 .orElseThrow(() -> new RegistrationException("There is no worker role"));
         roles.add(userRole);
         user.setRoles(roles);
+        user.setEnable(0);
+        user.setActivationCode(UUID.randomUUID().toString());
+
+        String message = String.format(
+                "Hello, %s! \n" +
+                        "Welcome to our system. Visit the link to activate your account: http://localhost:5000/api/auth/activation/%s",
+                user.getUsername(),
+                user.getActivationCode()
+        );
+        mailSender.send(user.getEmail(),"Activation code",message);
         return userRepository.save(user);
     }
 
@@ -99,5 +113,13 @@ public class UserServiceImpl implements UserServiceI{
         user.setRoles(roles);
         userRepository.save(user);
         return ResponseEntity.ok(user);
+    }
+
+    @Override
+    public String activateUser(String code) {
+        User user = userRepository.findByActivationCode(code);
+        user.setEnable(1);
+        userRepository.save(user);
+        return "<h1 style='text-align: center; font-size: 40px; margin-top: 100px; color: green;'>" + "Hello, " + user.getUsername() +", your account has been activated</h1>";
     }
 }

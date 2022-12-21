@@ -26,6 +26,8 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String activationCode;
+    private int enable;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

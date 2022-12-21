@@ -14,6 +14,7 @@ import java.io.IOError;
 import java.io.IOException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/user")
 public class UserController {
 

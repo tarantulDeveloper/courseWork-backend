@@ -1,5 +1,6 @@
 package kg.beaver.warehouse.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -17,7 +18,7 @@ public class Material {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @ManyToOne(fetch = FetchType.LAZY,optional=false)
+    @ManyToOne(fetch = FetchType.EAGER,optional=false)
     @JoinColumn(name="category_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
@@ -26,4 +27,8 @@ public class Material {
     private String description;
     private String size;
     private int quantity;
+
+    private String fileType;
+    @Lob
+    private byte[] data;
 }

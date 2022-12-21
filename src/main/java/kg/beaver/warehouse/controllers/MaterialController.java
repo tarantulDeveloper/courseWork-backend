@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 @RequestMapping("/api/material")
 public class MaterialController {
@@ -26,6 +27,9 @@ public class MaterialController {
                                 @RequestParam("description") String description) throws IOException {
 
 
+        if(file.isEmpty()) {
+
+        }
         return materialService.createMaterial(
                 file, price, category, materialName, quantity, size, description
         );

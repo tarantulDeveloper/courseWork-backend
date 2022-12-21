@@ -4,8 +4,11 @@ import kg.beaver.warehouse.services.UserDetailsServiceImpl;
 import kg.beaver.warehouse.utis.jwt.AuthEntryPoint;
 import kg.beaver.warehouse.utis.jwt.AuthTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,12 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.swing.*;
-import java.util.Arrays;
+import java.util.Properties;
 
 @RequiredArgsConstructor
 @Configuration
@@ -29,6 +28,31 @@ import java.util.Arrays;
 public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPoint unauthorizedHandler;
+    @Value("${spring.mail.host}")
+    private String host;
+    @Value("${spring.mail.username}")
+    private String username;
+    @Value("${spring.mail.password}")
+    private String password;
+    @Value("${spring.mail.port}")
+    private int port;
+    @Value("${spring.mail.protocol}")
+    private String protocol;
+    @Value("${mail.debug}")
+    private String debug;
+    @Bean
+    public JavaMailSender getMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
+        Properties properties = mailSender.getJavaMailProperties();
+        properties.setProperty("mail.transport.protocol", protocol);
+        properties.setProperty("mail.debug", debug);
+        return mailSender;
+    }
+
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -56,10 +80,15 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf().disable()
+        http.
+                cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/material/**").hasAnyRole("ADMIN","WORKER")
+                .antMatchers("/api/category/**").hasAnyRole("ADMIN", "WORKER")
+                .antMatchers("/api/admin-controller/**").hasRole("ADMIN")
+                .antMatchers("/api/common/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());

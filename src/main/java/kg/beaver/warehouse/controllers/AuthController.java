@@ -44,4 +44,9 @@ public class AuthController {
     public ResponseEntity<?> makeAdmin(@RequestBody SignUpRequest signUpRequest){
         return userService.makeAdmin(signUpRequest);
     }
+
+    @GetMapping("/activation/{activation}")
+    public String activateUser(@PathVariable(value = "activation") String code) {
+        return userService.activateUser(code);
+    }
 }
