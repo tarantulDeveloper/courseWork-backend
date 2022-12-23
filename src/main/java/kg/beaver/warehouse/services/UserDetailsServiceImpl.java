@@ -3,14 +3,13 @@ package kg.beaver.warehouse.services;
 import kg.beaver.warehouse.entities.User;
 import kg.beaver.warehouse.exceptions.RegistrationException;
 import kg.beaver.warehouse.repo.UserRepository;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ResolutionException;
+import javax.transaction.Transactional;
 
 @RequiredArgsConstructor
 @Service
